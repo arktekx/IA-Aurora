@@ -1,0 +1,14 @@
+{
+  "datos_asistente": {
+    "nombre": "Aurora",
+    "version": "1.2",
+    "ultima_actualizacion": "2026-03-31"
+  },
+  "comandos": {
+    "hola": "¡Hola! Estoy operando en modo local y mis sistemas están al 100%.",
+    "quien eres": "Soy Aurora, tu IA híbrida. Puedo aprender cosas nuevas si me sincronizas.",
+    "estado del sistema": "Todos los módulos offline están estables. Memoria optimizada.",
+    "chiste": "¿Qué le dice un bit a otro? Nos vemos en el bus.",
+    "gracias": "De nada, siempre es un placer ayudarte."
+  }
+}
