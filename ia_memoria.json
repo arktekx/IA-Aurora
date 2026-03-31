@@ -1,14 +1,106 @@
-{
-  "datos_asistente": {
-    "nombre": "Aurora",
-    "version": "1.2",
-    "ultima_actualizacion": "2026-03-31"
-  },
-  "comandos": {
-    "hola": "¡Hola! Estoy operando en modo local y mis sistemas están al 100%.",
-    "quien eres": "Soy Aurora, tu IA híbrida. Puedo aprender cosas nuevas si me sincronizas.",
-    "estado del sistema": "Todos los módulos offline están estables. Memoria optimizada.",
-    "chiste": "¿Qué le dice un bit a otro? Nos vemos en el bus.",
-    "gracias": "De nada, siempre es un placer ayudarte."
-  }
-}
+import flet as ft
+import requests
+import json
+import os
+import threading
+import speech_recognition as sr
+import pyttsx3
+
+# --- LA CONEXIÓN CON TU GITHUB ---
+# REEMPLAZA ESTA URL CON TU LINK RAW DE GITHUB
+UPDATE_URL = "https://raw.githubusercontent.com/arktekx/IA-Aurora/main/ia_memoria.json"
+LOCAL_FILE = "ia_memoria.json"
+
+engine = pyttsx3.init()
+
+def hablar(texto):
+    def run():
+        engine.say(texto)
+        engine.runAndWait()
+    threading.Thread(target=run, daemon=True).start()
+
+class AsistenteHibrido:
+    def __init__(self):
+        self.memoria = self.cargar_inicial()
+
+    def cargar_inicial(self):
+        if os.path.exists(LOCAL_FILE):
+            with open(LOCAL_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        return {"comandos": {"hola": "Hola, modo offline activado."}}
+
+    def sincronizar(self):
+        try:
+            r = requests.get(UPDATE_URL, timeout=5)
+            if r.status_code == 200:
+                with open(LOCAL_FILE, "w", encoding="utf-8") as f:
+                    json.dump(r.json(), f)
+                self.memoria = r.json()
+                return True
+        except:
+            return False
+        return False
+
+    def obtener_respuesta(self, entrada):
+        entrada = entrada.lower()
+        # Búsqueda inteligente por palabras clave
+        for clave, valor in self.memoria["comandos"].items():
+            if clave in entrada:
+                return valor
+        return "No tengo esa información en mi memoria local. Prueba actualizarme."
+
+def main(page: ft.Page):
+    page.title = "Aurora IA | arktekx Edition"
+    page.theme_mode = ft.ThemeMode.DARK
+    page.window_width = 400
+    
+    ia = AsistenteHibrido()
+    status = ft.Text("Sistema Local Listo", color="blue200")
+    chat = ft.Column(scroll=ft.ScrollMode.AUTO, expand=True)
+
+    def responder(texto):
+        chat.controls.append(ft.Container(content=ft.Text(f"👤 {texto}"), padding=5))
+        res = ia.obtener_respuesta(texto)
+        chat.controls.append(ft.Container(content=ft.Text(f"🤖 {res}", color="green400", weight="bold"), padding=5))
+        hablar(res)
+        page.update()
+
+    def btn_mic(e):
+        rec = sr.Recognizer()
+        with sr.Microphone() as source:
+            status.value = "🎤 Escuchando..."
+            page.update()
+            try:
+                audio = rec.listen(source, timeout=4)
+                frase = rec.recognize_google(audio, language="es-ES")
+                responder(frase)
+            except:
+                status.value = "❌ Error de audio"
+            status.value = "Sistema Local Listo"
+            page.update()
+
+    def btn_update(e):
+        status.value = "🔄 Sincronizando con arktekx GitHub..."
+        page.update()
+        if ia.sincronizar():
+            status.value = "✅ ¡Memoria Actualizada!"
+            hablar("He aprendido nuevos comandos de tu GitHub.")
+        else:
+            status.value = "⚠️ Error de conexión"
+        page.update()
+
+    page.add(
+        ft.Container(
+            content=ft.Column([
+                ft.Text("AURORA IA", size=30, weight="bold"),
+                status,
+                ft.ElevatedButton("Actualizar desde GitHub", icon=ft.icons.SYNC, on_click=btn_update),
+                ft.Divider(),
+                ft.Container(chat, height=400, bgcolor="white10", border_radius=10, padding=10),
+            ]),
+            padding=20
+        )
+    )
+    page.floating_action_button = ft.FloatingActionButton(icon=ft.icons.MIC, on_click=btn_mic)
+
+ft.app(target=main)
