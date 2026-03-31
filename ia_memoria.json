@@ -1,10 +1,15 @@
 {
+  "datos_asistente": {
+    "nombre": "Aurora",
+    "autor": "arktekx",
+    "version": "1.5"
+  },
   "comandos": {
-    "hola": "¡Hola! Soy Aurora, tu asistente híbrido. ¿En qué puedo ayudarte?",
-    "quien eres": "Soy una inteligencia artificial creada por arktekx para funcionar sin internet.",
-    "estado del sistema": "Todos los módulos están operativos. Memoria local cargada.",
-    "chiste": "¿Por qué los programadores confunden Navidad con Halloween? Porque Oct 31 es igual a Dec 25.",
+    "hola": "¡Hola! Estoy operando en modo local y mis sistemas están al cien por ciento.",
+    "quien eres": "Soy Aurora, una IA híbrida diseñada por arktekx para ser ligera y robusta.",
+    "estado del sistema": "Todos los módulos offline están estables. Memoria optimizada.",
+    "chiste": "¿Qué le dice un bit a otro? Nos vemos en el bus.",
     "actualizar": "Para enseñarme cosas nuevas, presiona el botón de sincronizar arriba.",
-    "gracias": "De nada, es un placer ayudarte."
+    "gracias": "De nada, siempre es un placer ayudarte."
   }
 }
